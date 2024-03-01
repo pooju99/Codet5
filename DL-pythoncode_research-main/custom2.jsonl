@@ -1,0 +1,180 @@
+{
+    "text": "Write a Python function to implement a basic calculator to evaluate a simple expression string. The expression string may contain open parentheses '(' and closing parentheses ')', the plus '+' or minus '-' signs, non-negative integers and empty spaces.",
+    "code": "def calculate(s):\n    stack = []\n    num = 0\n    sign = 1\n    result = 0\n    for c in s:\n        if c.isdigit():\n            num = 10*num + int(c)\n        elif c == '+':\n            result += sign*num\n            num = 0\n            sign = 1\n        elif c == '-':\n            result += sign*num\n            num = 0\n            sign = -1\n        elif c == '(':  \n            stack.append(result)\n            stack.append(sign)\n            sign = 1\n            result = 0\n        elif c == ')':\n            result += sign*num\n            num = 0\n            result *= stack.pop()\n            result += stack.pop()\n    result += sign*num\n    return result",
+    "task_id": 234,
+    "test_setup_code": "",
+    "test_list": [
+      {
+        "input": "('1 + 1',)",
+        "output": 2
+      },
+      {
+        "input": "(' 2-1 + 2 ',)",
+        "output": 3
+      },
+      {
+        "input": "('(1+(4+5+2)-3)+(6+8)',)",
+        "output": 23
+      }
+    ],
+    "challenge_test_list": []
+}
+  {
+    "text": "Write a Python class `MyStack` that implements a stack using two queues.",
+    "code": "from queue import Queue\n\nclass MyStack:\n\n    def __init__(self):\n        self.q1 = Queue()\n        self.q2 = Queue()\n        self.top_element = None\n\n    def push(self, x: int) -> None:\n        self.q1.put(x)\n        self.top_element = x\n\n    def pop(self) -> int:\n        while self.q1.qsize() > 1:\n            self.top_element = self.q1.get()\n            self.q2.put(self.top_element)\n        ret = self.q1.get()\n        self.q1, self.q2 = self.q2, self.q1\n        return ret\n\n    def top(self) -> int:\n        return self.top_element\n\n    def empty(self) -> bool:\n        return self.q1.empty()",
+    "task_id": 258,
+    "test_setup_code": "",
+    "test_list": [
+      "stack = MyStack()\nstack.push(1)\nstack.push(2)\nassert stack.top() == 2\nassert stack.pop() == 2\nassert stack.empty() == False\nassert stack.pop() == 1\nassert stack.empty() == True"
+    ],
+    "challenge_test_list": []
+}
+{
+    "text": "Write a Python function to invert a binary tree.",
+    "code": "def invertTree(root):\n if not root:\n return None\n \n left = invertTree(root.left)\n right = invertTree(root.right)\n \n root.left = right\n root.right = left\n \n return root\n",
+    "task_id": 1054,
+    "test_setup_code": "class TreeNode:\n def __init__(self, val=0, left=None, right=None):\n self.val = val\n self.left = left\n self.right = right\n\ndef create_tree(nodes):\n if not nodes:\n return None\n \n n = len(nodes)\n root = TreeNode(nodes[0])\n i, j = 1, 2\n q = [root]\n while i < n:\n node = q.pop(0)\n if nodes[i] is not None:\n node.left = TreeNode(nodes[i])\n q.append(node.left)\n if j < n and nodes[j] is not None:\n node.right = TreeNode(nodes[j])\n q.append(node.right)\n i += 2\n j += 2\n return root\n",
+    "test_list": [
+    "assert invertTree(create_tree([4,2,7,1,3,6,9])).val == 4",
+    "assert invertTree(create_tree([4,2,7,1,3,6,9])).left.val == 7",
+    "assert invertTree(create_tree([4,2,7,1,3,6,9])).right.val == 2",
+    "assert invertTree(create_tree([4,2,7,1,3,6,9])).left.left.val == 9",
+    "assert invertTree(create_tree([4,2,7,1,3,6,9])).left.right.val == 6",
+    "assert invertTree(create_tree([4,2,7,1,3,6,9])).right.left.val == 3",
+    "assert invertTree(create_tree([4,2,7,1,3,6,9])).right.right.val == 1",
+    "assert invertTree(None) is None"
+    ],
+    "challenge_test_list": []
+}
+{
+        "text": "Write a Python function to find the summary of ranges of a sorted integer array. The summary should be in the form of a list of strings, where each string represents a contiguous range of integers in the array.",
+        "code": "def summaryRanges(nums):\n if not nums:\n return []\n res = []\n start, end = nums[0], nums[0]\n for i in range(1, len(nums)):\n if nums[i] == end + 1:\n end = nums[i]\n else:\n if start == end:\n res.append(str(start))\n else:\n res.append(str(start) + '->' + str(end))\n start, end = nums[i], nums[i]\n if start == end:\n res.append(str(start))\n else:\n res.append(str(start) + '->' + str(end))\n return res\n",
+        "task_id": 1027,
+        "test_setup_code": "",
+        "test_list": [
+          {
+            "input": {
+              "nums": [0,1,2,4,5,7]
+            },
+            "output": ["0->2","4->5","7"]
+          },
+          {
+            "input": {
+              "nums": [0,2,3,4,6,8,9]
+            },
+            "output": ["0","2->4","6","8->9"]
+          }
+        ],
+        "challenge_test_list": []
+}
+{
+        "text": "Write a Python function to find all the elements in an array that appear more than floor(n/3) times, where n is the length of the array.",
+        "code": "def majorityElement(nums):\n count1 = count2 = 0\n candidate1 = candidate2 = None\n\n for num in nums:\n if num == candidate1:\n count1 += 1\n elif num == candidate2:\n count2 += 1\n elif count1 == 0:\n candidate1, count1 = num, 1\n elif count2 == 0:\n candidate2, count2 = num, 1\n else:\n count1, count2 = count1 - 1, count2 - 1\n\n res = []\n if nums.count(candidate1) > len(nums) // 3:\n res.append(candidate1)\n if nums.count(candidate2) > len(nums) // 3:\n res.append(candidate2)\n\n return res\n",
+        "task_id": 526,
+        "test_setup_code": "",
+        "test_list": [
+        "assert set(majorityElement([3,2,3])) == set([3])",
+        "assert set(majorityElement([1,1,1,3,3,2,2,2])) == set([1,2])"
+        ],
+        "challenge_test_list": []
+}
+{
+            "text": "Write a Python function to find the kth smallest element in a binary search tree.",
+            "code": "def kthSmallest(root, k):\n    stack = []\n    while True:\n        while root:\n            stack.append(root)\n            root = root.left\n        root = stack.pop()\n        k -= 1\n        if not k:\n            return root.val\n        root = root.right",
+            "task_id": 1166,
+            "test_setup_code": "from helper_functions import TreeNode, build_tree",
+            "test_list": [
+              {
+                "input": "root = build_tree([3,1,4,null,2]), k = 1",
+                "output": "1"
+              },
+              {
+                "input": "root = build_tree([5,3,6,2,4,null,null,1]), k = 3",
+                "output": "3"
+              }
+            ],
+            "challenge_test_list": []
+        }
+          {
+            "text": "Write a Python function that determines if a given integer n is a power of two.",
+            "code": "def isPowerOfTwo(n):\n return n > 0 and (n & (n-1)) == 0\n",
+            "task_id": 231,
+            "test_setup_code": "",
+            "test_list": [
+                {"input": "1", "output": "True"},
+                {"input": "16", "output": "True"},
+                {"input": "218", "output": "False"},
+                {"input": "0", "output": "False"}
+            ],
+            "challenge_test_list": []
+        }
+        {
+            "text": "Write a Python function to implement a queue using stacks.",
+            "code": "class MyQueue:\n def __init__(self):\n self.stack1 = []\n self.stack2 = []\n\n def push(self, x: int) -> None:\n self.stack1.append(x)\n\n def pop(self) -> int:\n if not self.stack2:\n while self.stack1:\n self.stack2.append(self.stack1.pop())\n return self.stack2.pop()\n\n def peek(self) -> int:\n if not self.stack2:\n while self.stack1:\n self.stack2.append(self.stack1.pop())\n return self.stack2[-1]\n\n def empty(self) -> bool:\n return not self.stack1 and not self.stack2\n",
+            "task_id": 561,
+            "test_setup_code": "",
+            "test_list": [
+            "q = MyQueue()\nq.push(1)\nq.push(2)\nassert q.peek() == 1\nassert q.pop() == 1\nassert q.empty() == False\nassert q.pop() == 2\nassert q.empty() == True"
+            ],
+            "challenge_test_list": []
+            }
+            {
+                "text": "Write a Python function to check if a linked list is a palindrome.",
+                "code": "def isPalindrome(head):\n if not head or not head.next:\n return True\n\n slow = fast = head\n stack = []\n while fast and fast.next:\n stack.append(slow.val)\n slow = slow.next\n fast = fast.next.next\n if fast:\n slow = slow.next\n\n while slow:\n if stack.pop() != slow.val:\n return False\n slow = slow.next\n\n return True",
+                "task_id": 234,
+                "test_setup_code": "",
+                "test_list": [
+                "# Test case 1\nnode1 = ListNode(1)\nnode2 = ListNode(2)\nnode3 = ListNode(3)\nnode4 = ListNode(2)\nnode5 = ListNode(1)\nnode1.next = node2\nnode2.next = node3\nnode3.next = node4\nnode4.next = node5\nassert isPalindrome(node1) == True",
+                "# Test case 2\nnode1 = ListNode(1)\nnode2 = ListNode(2)\nnode3 = ListNode(3)\nnode4 = ListNode(4)\nnode5 = ListNode(3)\nnode6 = ListNode(2)\nnode7 = ListNode(1)\nnode1.next = node2\nnode2.next = node3\nnode3.next = node4\nnode4.next = node5\nnode5.next = node6\nnode6.next = node7\nassert isPalindrome(node1) == True",
+                "# Test case 3\nnode1 = ListNode(1)\nnode2 = ListNode(2)\nnode3 = ListNode(3)\nnode4 = ListNode(4)\nnode5 = ListNode(5)\nnode1.next = node2\nnode2.next = node3\nnode3.next = node4\nnode4.next = node5\nassert isPalindrome(node1) == False"
+                ],
+                "challenge_test_list": []
+                }
+                {
+                    "text": "Write a Python function to count the number of digit 1 appearing in all non-negative integers less than or equal to n.",
+                    "code": "def countDigitOne(n):\n    res = 0\n    for i in range(1, n+1):\n        res += str(i).count('1')\n    return res\n",
+                    "task_id": 989,
+                    "test_setup_code": "",
+                    "test_list": [
+                        "assert countDigitOne(13) == 6",
+                        "assert countDigitOne(0) == 0"
+                    ],
+                    "challenge_test_list": []
+                }
+                {
+                    "text": "Write a Python function to delete a node (except the tail) in a singly linked list, given only access to that node.",
+                    "code": "def deleteNode(node):\n node.val = node.next.val\n node.next = node.next.next\n",
+                    "task_id": 237,
+                    "test_setup_code": "",
+                    "test_list": [
+                    "# Test case 1\nhead = ListNode(4, ListNode(5, ListNode(1, ListNode(9))))\nnode = head.next\ndeleteNode(node)\nassert head.getList() == [4, 1, 9]\n",
+                    "# Test case 2\nhead = ListNode(1, ListNode(2, ListNode(3, ListNode(4, ListNode(5)))))\nnode = head.next.next\ndeleteNode(node)\nassert head.getList() == [1, 2, 4, 5]"
+                    ],
+                    "challenge_test_list": []
+                    }
+                    {
+                        "text": "Write a Python function to return an array `output` such that `output[i]` is equal to the product of all the elements of `nums` except `nums[i]`.",
+                        "code": "def productExceptSelf(nums):\n n = len(nums)\n\n # Generate prefix products\n prefix_products = [1]*n\n for i in range(1, n):\n prefix_products[i] = prefix_products[i - 1] * nums[i - 1]\n\n # Generate suffix products\n suffix_products = [1]*n\n for i in reversed(range(n - 1)):\n suffix_products[i] = suffix_products[i + 1] * nums[i + 1]\n\n # Generate result\n result = [1]*n\n for i in range(n):\n result[i] = prefix_products[i] * suffix_products[i]\n\n return result\n",
+                        "task_id": 238,
+                        "test_setup_code": "",
+                        "test_list": [
+                        "assert productExceptSelf([1,2,3,4]) == [24,12,8,6]",
+                        "assert productExceptSelf([-1,1,0,-3,3]) == [0,0,9,0,0]"
+                        ],
+                        "challenge_test_list": []
+                        }
+                        {
+                            "text": "Write a Python function to find the maximum element in each sliding window of size k in a given array of integers.",
+                            "code": "from collections import deque\ndef maxSlidingWindow(nums, k):\n    q = deque()\n    res = []\n    for i, num in enumerate(nums):\n        while q and nums[q[-1]] < num:\n            q.pop()\n        q.append(i)\n        if q[0] == i - k:\n            q.popleft()\n        if i >= k - 1:\n            res.append(nums[q[0]])\n    return res",
+                            "task_id": 239,
+                            "test_setup_code": "",
+                            "test_list": [
+                                "assert maxSlidingWindow([1,3,-1,-3,5,3,6,7], 3) == [3,3,5,5,6,7]",
+                                "assert maxSlidingWindow([1], 1) == [1]",
+                                "assert maxSlidingWindow([1,-1], 1) == [1,-1]",
+                                "assert maxSlidingWindow([9,11], 2) == [11]",
+                                "assert maxSlidingWindow([4,-2], 2) == [4]",
+                                "assert maxSlidingWindow([7,2,4], 2) == [7,4]"
+                            ],
+                            "challenge_test_list": []
+                            }
